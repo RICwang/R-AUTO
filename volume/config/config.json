@@ -1,0 +1,19 @@
+{
+    "projectName": "R-AUTO",
+    "version": "v0.1.1",
+    "debug": false,
+    "taskTime": ["02:00:00", "23:00:00"],
+    "ports": [8321, 8341],
+    "taskList": [
+        {
+            "name": "Microsoft",
+            "username": "",
+            "password": ""
+        },
+        {
+            "name": "v2ex",
+            "username": "",
+            "password": ""
+        }
+    ]
+}
