@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>输入验证码</title>
+</head>
+<body>
+    <h1>输入验证码</h1>
+    <form id="vcForm"></form>
+        <label for="vcString">验证码:</label>
+        <input type="text" id="vcString" name="vcString" required>
+        <input type="button" value="提交" onclick="submitForm()">
+    </form>
+
+    <script>
+        function submitForm() {
+            const vcString = document.getElementById('vcString').value;
+            const vcPath = "{{ vcPath }}";
+
+            fetch(`/api/update-vc/${vcPath}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ vcString: vcString })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 提交成功
+                alert('提交成功');
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+    <h2>Uploaded Images</h2>
+    <img src="{{ url_for('static', filename=image) }}" alt="{{ image }}" width="200">
+</body>
+</html>
