@@ -1,7 +1,7 @@
 name: RAUTO CI
 
 on:
-  pull_request:
+  push:
     branches: [ "main" ]
 
 jobs:
@@ -27,4 +27,4 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_SPACENAME }}/${{ secrets.DOCKER_REPOSITORY }}:$(date +%s)  # 指定镜像标签
+        tags: ${{ secrets.DOCKER_SPACENAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.run_id }}  # 指定镜像标签
