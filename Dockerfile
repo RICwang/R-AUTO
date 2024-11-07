@@ -25,7 +25,7 @@ RUN pip install --no-cache-dir DrissionPage Flask
 WORKDIR /app
 
 # 将本地代码复制到容器中
-COPY /home/runner/work/R-AUTO/R-AUTO/* /app/
+COPY . .
 
 # 映射
 VOLUME /app/volume
