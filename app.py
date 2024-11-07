@@ -51,7 +51,7 @@ def apiUpdateVc(vcPath):
     app.logger.debug(f'update vc: {vcPath}')
     # 将vcString写入文件vcPath，不存在则创建
     with open(vcPath, 'w') as f:
-        f.write(vcString)
+        f.write(vcString) 
 
     return return_success()
 
