@@ -51,6 +51,10 @@ dataLogFile = os.path.join(dataFolder, 'log.json')
 # 初始化
 def initialize():
     loggerMain.info(f'正在初始化数据...')
+    # 文件不存在则创建
+    if not os.path.exists(dataLogFile):
+        with open(dataLogFile, 'w', encoding='utf-8') as f:
+            f.write('{}')
     # 初始化data操作日志文件
     dataLog = json.load(open(dataLogFile, 'r', encoding='utf-8'))
     if "task" not in dataLog:
