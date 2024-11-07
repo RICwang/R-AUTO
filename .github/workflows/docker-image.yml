@@ -29,4 +29,4 @@ jobs:
         push: true
         tags: |
           ${{ secrets.DOCKER_SPACENAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.run_id }}
-          ${{ secrets.DOCKER_SPACENAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest  # 指定镜像标签
+          ${{ secrets.DOCKER_SPACENAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
