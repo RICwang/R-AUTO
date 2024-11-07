@@ -1,6 +1,5 @@
 # 导入
 import multiprocessing
-import subprocess
 import os
 import json
 import time
@@ -14,69 +13,45 @@ from lib.AutoMicrosoft import AutoMicrosoft
 # 项目根目录
 rootPath = os.path.dirname(__file__)
 
-# 配置文件
+# 读取配置文件
 configFile = os.path.join(rootPath, 'volume', 'config', 'config.json')
-# 读取json文件
 config = json.load(open(configFile, 'r', encoding='utf-8'))
-configDebug = config["debug"]
 
-# 创建目录
+# 日志配置
 logFolder = os.path.join(rootPath, 'volume', 'logs')
-if not os.path.exists(logFolder):
-    os.makedirs(logFolder)
-# 日志格式
 logFormat = '%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d %(message)s'
-maxBytes=20*1024*1024
-backupCount=5
-
-# 创建主进程的日志对象
+maxBytes = 20 * 1024 * 1024
+backupCount = 5
 logFile = os.path.join(logFolder, f"logger-main.log")
 loggerMain = logging.getLogger()
-logLevel = logging.DEBUG if configDebug else logging.INFO
+logLevel = logging.DEBUG if config["debug"] else logging.INFO
 loggerMain.setLevel(logLevel)
 formatter = logging.Formatter(logFormat)
 fileHandler = logging.handlers.RotatingFileHandler(logFile, maxBytes=maxBytes, backupCount=backupCount, encoding='utf-8')
 fileHandler.setFormatter(formatter)
 loggerMain.addHandler(fileHandler)
-
 consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(formatter)
 loggerMain.addHandler(consoleHandler)
 
-dataFolder = os.path.join(rootPath, 'volume', 'data')
-if not os.path.exists(dataFolder):
-    os.makedirs(dataFolder)
-dataLogFile = os.path.join(dataFolder, 'log.json')
-
-# 初始化
-def initialize():
-    loggerMain.info(f'正在初始化数据...')
-    # 文件不存在则创建
-    if not os.path.exists(dataLogFile):
-        with open(dataLogFile, 'w', encoding='utf-8') as f:
-            f.write('{}')
-    # 初始化data操作日志文件
-    dataLog = json.load(open(dataLogFile, 'r', encoding='utf-8'))
-    if "task" not in dataLog:
-        dataLog["task"] = dict()
-    for task in config["taskList"]:
-        k = f'{task["name"]}=={task["username"]}'
-        if k not in dataLog["task"]:
-            dataLog["task"][k] = {
-                "status": 0,
-                "port": 0,
-                "handlingDate": "",
-                "finishDates": []
-            }
-    json.dump(dataLog, open(dataLogFile, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
-    loggerMain.info(f'初始化数据完成')
-
-# 提供web服务
-def start_flask_app():
-    loggerMain.info('正在启动web服务...')
-    appPath = os.path.join(rootPath, 'app.py')
-    with open(os.devnull, 'w') as devnull:
-        subprocess.Popen(['python', appPath], stdout=devnull, stderr=devnull)
+# 初始化数据
+loggerMain.info(f'正在初始化数据...')
+dataLogFile = os.path.join(os.path.join(rootPath, 'volume', 'data'), 'log.json')
+# 初始化data操作日志文件
+dataLog = json.load(open(dataLogFile, 'r', encoding='utf-8'))
+for task in config["taskList"]:
+    if task["username"] == "":
+        continue
+    k = f'{task["name"]}=={task["username"]}'
+    if k not in dataLog["task"]:
+        dataLog["task"][k] = {
+            "status": 0,
+            "port": 0,
+            "handlingDate": "",
+            "finishDates": []
+        }
+json.dump(dataLog, open(dataLogFile, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
+loggerMain.info(f'初始化数据完成')
 
 # 消费者，执行任务
 def task_worker(taskname, username, password, port):
@@ -114,10 +89,8 @@ def task_worker(taskname, username, password, port):
             # 将e所有内容都输出到日志
             loggerMain.error(e, exc_info=True)
 
-
 # 主函数
 def main():
-
     loggerMain.info('开始任务')
 
     # 创建一个进程字典，port为key，进程为value
@@ -190,6 +163,7 @@ def main():
                 
                 update_data_log(taskname=taskname, username=username, updateDict=updateDictNew)
                 configTask = get_config_task(taskname=taskname, username=username)
+                loggerMain.info(f'【{taskname}】任务配置：{configTask}')
 
                 # 创建进程
                 p = multiprocessing.Process(target=task_worker, args=(taskname, username, configTask["password"], port))
@@ -200,13 +174,6 @@ def main():
             
         time.sleep(20)
 
-
 if __name__ == '__main__':
     loggerMain.info(f'欢迎使用【{config["projectName"]}】项目，当前版本：【{config["version"]}】')
-    initialize()
-
-    # 启动Flask应用
-    flaskProcess = multiprocessing.Process(target=start_flask_app)
-    flaskProcess.start()
-    # pass
     main()
