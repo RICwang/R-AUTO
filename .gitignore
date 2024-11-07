@@ -1,5 +1,3 @@
 __pycache__/
 static/tmp
-volume/user_data
-volume/data
-volume/logs
+volume
