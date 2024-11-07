@@ -9,7 +9,6 @@ class AutoMicrosoft:
         self.logger = logger
         self.config = {"username": username, "password": password}
         self.rootpath = os.path.dirname(os.path.dirname(__file__))
-        self.logger.info(self.rootpath)
 
         # 创建页面对象
         configFilepath = os.path.join(
