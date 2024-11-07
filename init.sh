@@ -15,3 +15,4 @@ if [ -z "$(ls -A "$VOLUME_DIR")" ]; then
     echo "volume 目录为空，开始复制文件..."
     cp -r "$EXAMPLE_DIR"/* "$VOLUME_DIR"/
     echo "文件复制完成。"
+fi
