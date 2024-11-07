@@ -30,10 +30,9 @@ class AutoMicrosoft:
     def signIn(self):
         self.logger.info(f'校验{self.autoname}签到状态...')
         loginPage = self.chromium.new_tab(url='https://www.bing.com')
-        loginPage.wait(1)
+        loginPage.wait.ele_displayed('tag:span@class=points-container')
         loginPage.ele('tag:span@class=points-container').click()
-        loginPage = self.chromium.latest_tab
-        loginPage.wait(1)
+        loginPage.wait.ele_displayed('tag:span@class=css-128')
         loginPage.ele('tag:span@class=css-128').click()
         signInPage = self.chromium.latest_tab
         signInPage.wait(1)
@@ -43,6 +42,7 @@ class AutoMicrosoft:
         # signInPage = self.chromium.new_tab(url='https://rewards.bing.com/')
         signInPage = self.chromium.latest_tab
         # signInPage.wait(20000)
+        signInPage.wait.ele_displayed('tag:mee-card')
         cardEles = signInPage.ele('tag:mee-rewards-daily-set-section').eles('tag:mee-card')
         for cardEle in cardEles:
             # 判断是否有效的卡片
@@ -50,9 +50,7 @@ class AutoMicrosoft:
             if disabledAttr:
                 # 无效跳过
                 continue
-            # self.logger.info(f'{cardEle.html}')
             checkedEle = cardEle.ele('tag:span@class=mee-icon mee-icon-SkypeCircleCheck')
-            # self.logger.info(f'{checkedEle.html}')
             if checkedEle:
                 continue
             cardEle.ele('tag:a@class=ds-card-sec ng-scope').click.for_new_tab()
@@ -65,8 +63,7 @@ class AutoMicrosoft:
     def login(self):
         self.logger.info(f'校验{self.autoname}登录状态...')
         loginPage = self.chromium.new_tab(url='https://www.bing.com')
-        # 等待页面加载
-        loginPage.wait(2)
+        loginPage.wait.ele_displayed('tag:span@id=id_n')
         nicknameEle = loginPage.ele('tag:span@id=id_n')
 
         # 已登录
@@ -77,8 +74,8 @@ class AutoMicrosoft:
             return
 
         # 未登录
-        self.logger.info('未登录')
         self.logger.info('登录中...')
+        loginPage.wait.ele_displayed('tag:span@id=id_s')
         loginPage.ele('tag:span@id=id_s').click(by_js=None)
         loginPage.ele('xpath://*[@id="b_idProviders"]/li[1]/a/span').click(by_js=None)
         # 等待页面加载
@@ -88,11 +85,9 @@ class AutoMicrosoft:
         self.chromium.close_tabs(loginPage)
 
     def _login(self):
-        
         loginPage = self.chromium.latest_tab
         loginPage.ele('tag:input').focus().input(vals=self.config['username'], clear=True)
-        # 等待页面加载
-        loginPage.wait(2)
+        loginPage.wait.ele_displayed('xpath://*[@id="idSIButton9"]')
         loginPage.ele('xpath://*[@id="idSIButton9"]').click()
         
         while True:

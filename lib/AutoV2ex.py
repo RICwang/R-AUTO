@@ -43,8 +43,7 @@ class AutoV2ex:
     def login(self):
         self.logger.info(f'校验{self.autoname}登录状态...')
         loginPage = self.chromium.new_tab(url='https://www.v2ex.com')
-        # 等待页面加载
-        loginPage.wait(2)
+        loginPage.wait.ele_displayed('tag:div@class=tools')
         topEles = loginPage.ele('tag:div@class=tools').eles('tag:a')
 
         # 已登录
@@ -55,15 +54,13 @@ class AutoV2ex:
             return
 
         # 未登录
-        self.logger.info('未登录')
         self.logger.info('登录中...')
         topEles[-1].click(by_js=None)
 
         loginPage = self.chromium.latest_tab
 
         # 输入账号密码
-        self.logger.info(
-            f'账号：{self.config["username"]}，密码：{self.config["password"]}')
+        self.logger.info(f'账号：{self.config["username"]}，密码：***')
         
         loginFalseString = ''
         while True:
