@@ -1,5 +1,3 @@
-# 导入
-import multiprocessing
 import os
 import json
 import time
@@ -92,9 +90,6 @@ def task_worker(taskname, username, password, port):
 def main():
     loggerMain.info('开始任务')
 
-    # 创建一个进程字典，port为key，进程为value
-    processes = {}
-
     # 无限循环，每20秒执行一次
     while True:
         todayStr = time.strftime("%Y%m%d", time.localtime())
@@ -136,11 +131,6 @@ def main():
 
                 handlingDate = task["handlingDate"]
                 if todayStr != handlingDate:
-                    # 今天之前的任务还在执行中，杀掉任务重启
-                    if task["port"] in processes:
-                        processes[task["port"]].terminate()
-                        processes.pop(task["port"])
-
                     updateDictNew = {
                         "status" : 0,
                         "port" : 0,
@@ -163,13 +153,7 @@ def main():
                 updateDictNew["port"] = port
                 update_data_log(taskname=taskname, username=username, updateDict=updateDictNew)
                 configTask = get_config_task(taskname=taskname, username=username)
-
-                # 创建进程
-                p = multiprocessing.Process(target=task_worker, args=(taskname, username, configTask["password"], port))
-                # 启动进程
-                p.start()
-                # 将进程加入到进程列表中
-                processes[port] = p
+                task_worker(taskname, username, configTask["password"], port)
 
 if __name__ == '__main__':
     loggerMain.info(f'欢迎使用【{config["projectName"]}】项目，当前版本：【{config["version"]}】')
