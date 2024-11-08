@@ -4,7 +4,7 @@
 ./init.sh
 
 # 启动 WEB 应用
-exec python app.py
+exec nohup python app.py > nohup.out 2>&1 &
 
 # 启动 Python 应用
 exec python main.py

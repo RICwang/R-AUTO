@@ -70,13 +70,12 @@ def task_worker(taskname, username, password, port):
 
     if clz is None:
         return
-    
+
     while True:
         try:
             clz.main()
             if clz.res:
                 loggerMain.info(f'【{taskname}】任务已完成')
-                
                 updateDictNew = {
                     'status': 0,
                     'port': 0,
@@ -116,11 +115,13 @@ def main():
             kArray = k.split('==')
             taskname = kArray[0]
             username = kArray[1]
+            if username == "":
+                continue
             finishDates = task["finishDates"] 
             # 执行完成的任务不再执行
             if todayStr in finishDates:
                 continue
-            
+
             # 任务正在执行中
             if task["status"] == 1:
                 if task["port"] in unused_ports:
@@ -160,10 +161,8 @@ def main():
                 # 从unused_ports取出一个端口，并从unused_ports中删除
                 port = unused_ports.pop(0)
                 updateDictNew["port"] = port
-                
                 update_data_log(taskname=taskname, username=username, updateDict=updateDictNew)
                 configTask = get_config_task(taskname=taskname, username=username)
-                loggerMain.info(f'【{taskname}】任务配置：{configTask}')
 
                 # 创建进程
                 p = multiprocessing.Process(target=task_worker, args=(taskname, username, configTask["password"], port))
@@ -171,8 +170,6 @@ def main():
                 p.start()
                 # 将进程加入到进程列表中
                 processes[port] = p
-            
-        time.sleep(20)
 
 if __name__ == '__main__':
     loggerMain.info(f'欢迎使用【{config["projectName"]}】项目，当前版本：【{config["version"]}】')
