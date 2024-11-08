@@ -2,23 +2,9 @@
 # 作者：Ricky
 # 日期：2024-11-22
 
-from urllib.parse import quote
 import os
 import json
 import socket
-import requests
-
-
-# 推送通知
-# https://api.day.app/[token]/这里改成你自己的推送内容
-def bark_ts(token, content):
-    # 1.推送内容，并urlencode编码
-    content = quote(content)
-    # 2.推送url,content参数需要urlencode编码
-    url = f'https://api.day.app/{token}/{content}'
-    # 3.发送请求
-    response = requests.get(url=url)
-
 
 # 检查端口是否被占用
 # 返回值：
