@@ -37,4 +37,4 @@ VOLUME /app/volume
 EXPOSE 5000
 
 # 设置入口点，先执行 init.sh，然后运行 main.py
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "-c", "/app/entrypoint.sh"]
