@@ -12,6 +12,7 @@ class Ts:
         pass
 
     def send(self, content):
+        pass
         self.ts_types.forEach(lambda ts_type: self.ts_type(content))
 
 
