@@ -1,7 +1,7 @@
 FROM ricwang/drissionpage:latest
 
 # 安装 pip 包
-RUN pip install --no-cache-dir Flask
+RUN pip install --no-cache-dir Flask Faker
 
 # 设置工作目录
 WORKDIR /app

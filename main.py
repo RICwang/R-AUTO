@@ -11,6 +11,15 @@ from lib.AutoMicrosoft import AutoMicrosoft
 # 项目根目录
 rootPath = os.path.dirname(__file__)
 
+# 读取项目配置文件PRODUCT，格式为key=value，获取项目名称和版本号
+productFile = os.path.join(rootPath, 'PRODUCT')
+product = {}
+with open(productFile, 'r', encoding='utf-8') as f:
+    for line in f:
+        k, v = line.strip().split("=")
+        product[k] = v
+
+
 # 读取配置文件
 configFile = os.path.join(rootPath, 'volume', 'config', 'config.json')
 config = json.load(open(configFile, 'r', encoding='utf-8'))
@@ -49,6 +58,9 @@ for task in config["taskList"]:
             "finishDates": []
         }
 json.dump(dataLog, open(dataLogFile, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
+if len(dataLog["task"]) == 0:
+    loggerMain.info(f'请配置任务及账号')
+    exit(0)
 loggerMain.info(f'初始化数据完成')
 
 # 消费者，执行任务
@@ -156,5 +168,6 @@ def main():
                 task_worker(taskname, username, configTask["password"], port)
 
 if __name__ == '__main__':
-    loggerMain.info(f'欢迎使用【{config["projectName"]}】项目，当前版本：【{config["version"]}】')
+
+    loggerMain.info(f'欢迎使用【{product["name"]}】项目，当前版本：【{product["version"]}】')
     main()

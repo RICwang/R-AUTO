@@ -5,6 +5,57 @@
 import os
 import json
 import socket
+from typing import Literal, Optional
+from enum import Enum
+from faker import Faker
+
+class FakeDataType(Enum):
+    NAME = "name"
+    COUNTRY = "country"
+    COMPANY = "company"
+    EMAIL = "email"
+    PHONE = "phone_number"
+    ADDRESS = "address"
+    ALL = "all"
+
+def faker_str(type_name: str = "all") -> str:
+    """生成随机假数据
+    
+    Args:
+        type_name: 数据类型，可选值为 name/country/company/email/phone_number/address/all
+                  默认为 all (随机选择一种类型)
+    
+    Returns:
+        str: 生成的随机数据
+        
+    Examples:
+        >>> faker_str("name")  
+        '张三'
+        >>> faker_str("email")
+        'example@email.com'
+    """
+    fake = Faker("zh_CN")
+    
+    # 数据类型映射表
+    type_mapping = {
+        FakeDataType.NAME.value: fake.name,
+        FakeDataType.COUNTRY.value: fake.country,
+        FakeDataType.COMPANY.value: fake.company,
+        FakeDataType.EMAIL.value: fake.email,
+        FakeDataType.PHONE.value: fake.phone_number,
+        FakeDataType.ADDRESS.value: fake.address
+    }
+
+    try:
+        # 如果类型不存在或为 all，随机选择一个类型
+        if type_name not in type_mapping or type_name == FakeDataType.ALL.value:
+            type_name = fake.random_element(list(type_mapping.keys()))
+            
+        return type_mapping[type_name]()
+        
+    except Exception as e:
+        print(f"生成随机数据时发生错误: {str(e)}")
+        return fake.name()  # 发生错误时返回默认值
 
 # 检查端口是否被占用
 # 返回值：

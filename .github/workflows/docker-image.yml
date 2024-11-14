@@ -21,6 +21,13 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: Get version from PRODUCT
+      id: get_version
+      shell: bash
+      run: |
+        VERSION=$(grep -oP '^version=\K.*' PRODUCT)
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v3
       with:
@@ -28,5 +35,5 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: |
-          ${{ secrets.DOCKER_SPACENAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.run_id }}
+          ${{ secrets.DOCKER_SPACENAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ steps.get_version.outputs.version }}
           ${{ secrets.DOCKER_SPACENAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
