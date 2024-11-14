@@ -43,7 +43,7 @@ class AutoV2ex:
     def login(self):
         self.logger.info(f'校验{self.autoname}登录状态...')
         loginPage = self.chromium.new_tab(url='https://www.v2ex.com')
-        loginPage.wait.ele_displayed('tag:div@class=tools')
+        loginPage.wait.eles_loaded('tag:div@class=tools')
         topEles = loginPage.ele('tag:div@class=tools').eles('tag:a')
 
         # 已登录
