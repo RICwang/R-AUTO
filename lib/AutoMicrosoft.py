@@ -1,5 +1,7 @@
 import os
+from func.common import faker_str
 from DrissionPage import Chromium, ChromiumOptions
+from DrissionPage.common import Keys
 
 class AutoMicrosoft:
     def __init__(self, username=None, password=None, port=None, logger=None):
@@ -28,21 +30,48 @@ class AutoMicrosoft:
 
     # 签到
     def signIn(self):
-        self.logger.info(f'校验{self.autoname}签到状态...')
-        loginPage = self.chromium.new_tab(url='https://www.bing.com')
-        loginPage.wait(5)
-        loginPage.wait.ele_displayed('tag:span@class=points-container')
-        loginPage.ele('tag:span@class=points-container').click()
-        loginPage.wait(2)
-        loginPage.wait.ele_displayed('tag:div@class=flyout_control_threeOffers')
-        promoEles = loginPage.ele('tag:div@class=flyout_control_threeOffers').eles('tag:div@class=promo_cont')
-        for promoEle in promoEles:
-            aEle = promoEle.ele('tag:a')
-            if not aEle:
-                continue
-            self.chromium.new_tab(url=aEle.attr('href'), background=True)
-
-        loginPage.wait(2)
+        self.logger.info(f'正在完成{self.autoname}特定任务...')
+        while True:
+            signInPage = self.chromium.new_tab(url='https://www.bing.com')
+            signInPage.wait(5)
+            signInPage.wait.ele_displayed('tag:span@class=points-container')
+            signInPage.ele('tag:span@class=points-container').click()
+            signInPage.wait(2)
+            signInPage.wait.ele_displayed('tag:div@class=flyout_control_threeOffers')
+            mainEles = signInPage.ele('tag:div@class=flyout_control_threeOffers')
+            if not mainEles:
+                self.chromium.close_tabs(signInPage)
+                break
+            promoEles = mainEles.eles('tag:div@class=promo_cont')
+            for promoEle in promoEles:
+                finishEle = promoEle.ele('tag:div@class^fc_auto pc b_subtitle complete')
+                if finishEle:
+                    continue
+                aEle = promoEle.ele('tag:a')
+                aEle.click()
+                signInPage.wait.ele_displayed('#id_rh_w')
+                signInPage.wait(2)
+                signInPage.ele('#id_rh_w').click()
+                signInPage.wait(3)
+                break
+                
+            signInPage.wait(2)
+            self.chromium.close_tabs(signInPage)
+            
+        self.logger.info(f'正在完成{self.autoname}搜索任务...')
+        i = 0
+        while True:
+            if i >= 3:
+                break
+            searchPage = self.chromium.new_tab(url='https://www.bing.com')
+            searchPage.ele('tag:input').focus().input(vals=faker_str(), clear=True).input(Keys.ENTER)
+            searchPage.wait(5)
+            searchPage.wait.ele_displayed('#id_rh_w')
+            searchPage.wait(2)
+            searchPage.ele('#id_rh_w').click()
+            searchPage.wait(3)
+            self.chromium.close_tabs(searchPage)
+            i += 1
         
         self.res = True
 
@@ -102,7 +131,6 @@ class AutoMicrosoft:
                 loginPage.ele('xpath://*[@id="primaryButton"]').click(by_js=None)
                 self.logger.info(errorEle.text)
                 continue
-
 
     def main(self):
         self.logger.info('===============================================')
