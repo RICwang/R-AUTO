@@ -33,6 +33,7 @@ class AutoMicrosoft:
         self.logger.info(f'正在完成{self.autoname}特定任务...')
         while True:
             signInPage = self.chromium.new_tab(url='https://www.bing.com')
+            signInPage.set.load_mode.eager()
             signInPage.wait(5)
             signInPage.wait.ele_displayed('tag:span@class=points-container')
             signInPage.ele('tag:span@class=points-container').click()
@@ -64,6 +65,7 @@ class AutoMicrosoft:
             if i >= 3:
                 break
             searchPage = self.chromium.new_tab(url='https://www.bing.com')
+            searchPage.set.load_mode.eager()
             searchPage.ele('tag:input').focus().input(vals=faker_str(), clear=True).input(Keys.ENTER)
             searchPage.wait(5)
             searchPage.wait.ele_displayed('#id_rh_w')
@@ -79,6 +81,7 @@ class AutoMicrosoft:
     def login(self):
         self.logger.info(f'校验{self.autoname}登录状态...')
         loginPage = self.chromium.new_tab(url='https://www.bing.com')
+        loginPage.set.load_mode.eager()
         loginPage.wait.ele_displayed('tag:span@id=id_n')
         nicknameEle = loginPage.ele('tag:span@id=id_n')
 
